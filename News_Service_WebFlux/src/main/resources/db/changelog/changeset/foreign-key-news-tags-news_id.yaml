@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: V004
+      author: Ekaterina
+      changes:
+        - addForeignKeyConstraint:
+             baseTableName: news_tags
+             baseColumnNames: news_id
+             constraintName: fk_news_tags_news
+             referencedTableName: news
+             referencedColumnNames: news_id
+             baseTableSchemaName: news_schema
+             referencedTableSchemaName: news_schema
