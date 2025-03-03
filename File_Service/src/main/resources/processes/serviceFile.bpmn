@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
+                  id="Definitions_1"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <bpmn:process id="fileRoutingProcess" name="File Routing Process" isExecutable="true" camunda:historyTimeToLive="180">
+
+    <bpmn:startEvent id="startEvent" name="Start">
+      <bpmn:outgoing>flow1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:serviceTask id="fileReceiveTask" name="Receive File" camunda:delegateExpression="${fileReceiveDelegate}">
+      <bpmn:incoming>flow1</bpmn:incoming>
+      <bpmn:outgoing>flow2</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="fileCheckTask" name="Check File Type" camunda:delegateExpression="${fileCheckDelegate}">
+      <bpmn:incoming>flow2</bpmn:incoming>
+      <bpmn:outgoing>flow3</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:exclusiveGateway id="exclusiveGateway" name="Is PDF?">
+      <bpmn:incoming>flow3</bpmn:incoming>
+      <bpmn:outgoing>flow4</bpmn:outgoing>
+      <bpmn:outgoing>flow5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:serviceTask id="fileSendGrpcTask" name="Send File via GRPC" camunda:delegateExpression="${fileSendGrpcDelegate}">
+      <bpmn:incoming>flow4</bpmn:incoming>
+      <bpmn:outgoing>flow6</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="fileSendRabbitTask" name="Send File via RabbitMQ" camunda:delegateExpression="${fileSendRabbitDelegate}">
+      <bpmn:incoming>flow5</bpmn:incoming>
+      <bpmn:outgoing>flow7</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+      <bpmn:endEvent id="endEvent" name="End">
+      <bpmn:incoming>flow6</bpmn:incoming>
+      <bpmn:incoming>flow7</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="flow1" sourceRef="startEvent" targetRef="fileReceiveTask" />
+    <bpmn:sequenceFlow id="flow2" sourceRef="fileReceiveTask" targetRef="fileCheckTask" />
+    <bpmn:sequenceFlow id="flow3" sourceRef="fileCheckTask" targetRef="exclusiveGateway" />
+    <bpmn:sequenceFlow id="flow4" sourceRef="exclusiveGateway" targetRef="fileSendGrpcTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isPdf == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow5" sourceRef="exclusiveGateway" targetRef="fileSendRabbitTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isPdf == false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow6" sourceRef="fileSendGrpcTask" targetRef="endEvent" />
+    <bpmn:sequenceFlow id="flow7" sourceRef="fileSendRabbitTask" targetRef="endEvent" />
+
+  </bpmn:process>
+</bpmn:definitions>

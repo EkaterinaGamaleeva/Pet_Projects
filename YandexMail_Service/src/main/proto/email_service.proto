@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.grpc";
+option java_outer_classname = "EmailServiceProto";
+
+message SendFileRequest {
+  string email = 1;
+  string text = 2;
+  bytes file = 3;
+  string filename = 4;
+}
+
+message SendFileResponse {
+  string message = 1;
+}
+
+service EmailService {
+  rpc sendEmailWithAttachment(SendFileRequest) returns (SendFileResponse);
+}
