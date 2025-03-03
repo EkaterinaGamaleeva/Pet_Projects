@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: V004
+      author: Ekaterina
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              schemaName: news_schema
+              tableName: news_tags
+      changes:
+        - createTable:
+            tableName: news_tags
+            schemaName: news_schema
+            columns:
+              - column:
+                  name: news_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tag_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_news_tags
+#
+#        - addForeignKeyConstraint:
+#            baseTableName: news_tags
+#            baseColumnNames: news_id
+#            constraintName: fk_news_tags_news
+#            referencedTableName: news
+#            referencedColumnNames: news_id
+#            baseTableSchemaName: news_schema
+#            referencedTableSchemaName: news_schema
+#
+#        - addForeignKeyConstraint:
+#            baseTableName: news_tags
+#            baseColumnNames: tag_id
+#            constraintName: fk_news_tags_tags
+#            referencedTableName: tags
+#            referencedColumnNames: tag_id
+#            baseTableSchemaName: news_schema
+#            referencedTableSchemaName: news_schema

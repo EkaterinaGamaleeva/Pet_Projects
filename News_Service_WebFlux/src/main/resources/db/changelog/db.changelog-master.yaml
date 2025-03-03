@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/create-news-schema.yaml
+  - include:
+      file: db/changelog/changeset/create-users.yaml
+  - include:
+      file: db/changelog/changeset/create-tags.yaml
+  - include:
+      file: db/changelog/changeset/create-news.yaml
+  - include:
+      file: db/changelog/changeset/create-news-tags.yaml
+  - include:
+      file: db/changelog/changeset/foreign-key-news-tags-news_id.yaml
+  - include:
+      file: db/changelog/changeset/foreign-key-news-tags-tag_id.yaml
+  - include:
+      file: db/changelog/changeset/create-request-logs.yaml

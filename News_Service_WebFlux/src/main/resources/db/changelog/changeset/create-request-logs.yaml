@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: V005
+      author: Ekaterina
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              schemaName: news_schema
+              tableName: request_logs
+      changes:
+        - createTable:
+            tableName: request_logs
+            schemaName: news_schema
+            columns:
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: method
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: url
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: errors
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: users_email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
